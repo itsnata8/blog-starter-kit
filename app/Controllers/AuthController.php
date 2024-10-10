@@ -79,4 +79,16 @@ class AuthController extends BaseController
             }
         }
     }
+    public function forgotForm()
+    {
+        $data = array(
+            'pageTitle' => 'Forgot Password',
+            'validation' => null
+        );
+        return view('backend/pages/auth/forgot', $data);
+    }
+    public function sendPasswordResetLink()
+    {
+        echo 'Send Password Reset Link';
+    }
 }
