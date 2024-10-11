@@ -7,10 +7,13 @@ use App\Libraries\Hash;
 use App\Libraries\CIAuth;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\PasswordResetToken;
+use Carbon\Carbon;
+
 
 class AuthController extends BaseController
 {
-    protected $helpers = ['url', 'form'];
+    protected $helpers = ['url', 'form', 'CIMail'];
     public function loginForm()
     {
         $data = [
@@ -89,6 +92,71 @@ class AuthController extends BaseController
     }
     public function sendPasswordResetLink()
     {
-        echo 'Send Password Reset Link';
+        $isValid = $this->validate([
+            'email' => [
+                'rules' => 'required|valid_email|is_not_unique[users.email]',
+                'errors' => [
+                    'required' => 'Email is required',
+                    'valid_email' => 'Please, check the email field. It does not appears to be valid.',
+                    'is_not_unique' => 'Email is not exists in our system.'
+                ]
+            ]
+        ]);
+        if (!$isValid) {
+            return view('backend/pages/auth/forgot', [
+                'pageTitle' => 'Forgot Password',
+                'validation' => $this->validator
+            ]);
+        } else {
+            // get credential
+            $user = new User();
+            $user_info = $user->asObject()->where('email', $this->request->getVar('email'))->first();
+
+            // generate token
+            $token = bin2hex(openssl_random_pseudo_bytes(65));
+
+            // get reset password token
+            $password_reset_token = new PasswordResetToken();
+            $isOldTokenExists = $password_reset_token->asObject()->where('email', $user_info->email)->first();
+
+            if ($isOldTokenExists) {
+                $password_reset_token->where('email', $user_info->email)
+                    ->set(['token' => $token, 'created_at' => Carbon::now()])
+                    ->update();
+            } else {
+                $password_reset_token->insert([
+                    'email' => $user_info->email,
+                    'token' => $token,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            // create action link
+            $actionLink = route_to('admin.reset-password', $token);
+
+            $mail_data = array(
+                'actionLink' => $actionLink,
+                'user' => $user_info
+            );
+
+            $view = \Config\Services::renderer();
+            $mail_body = $view->setVar('mail_data', $mail_data)->render('email-templates/forgot-email-template');
+
+            $mailConfig = array(
+                'mail_from_email' => env('MAIL_FROM_ADDRESS'),
+                'mail_from_name' => env('MAIL_FROM_NAME'),
+                'mail_recipient_email' => $user_info->email,
+                'mail_recipient_name' => $user_info->name,
+                'mail_subject' => 'Reset Password',
+                'mail_body' => $mail_body
+            );
+
+            // send email
+            if (sendEmail($mailConfig)) {
+                return redirect()->route('admin.forgot.form')->with('success', 'We have e-mailed your password reset link.');
+            } else {
+                return redirect()->route('admin.forgot.form')->with('fail', 'Something went wrong. Please try again later.');
+            }
+        }
     }
 }

@@ -141,3 +141,15 @@
 #--------------------------------------------------------------------
 
 # curlrequest.shareOptions = false
+
+#--------------------------------------------------------------------
+# PHPMailer
+#--------------------------------------------------------------------
+
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_USERNAME = 'username'
+# EMAIL_PASSWORD = 'password'
+# EMAIL_ENCRYPTION = 'tls'
+# EMAIL_PORT = 587
+# EMAIL_FROM_ADDRESS = 'jw9x1@example.com'
+# EMAIL_FROM_NAME = 'Your Name'
