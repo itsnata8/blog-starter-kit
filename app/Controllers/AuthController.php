@@ -179,5 +179,32 @@ class AuthController extends BaseController
             }
         }
     }
-    public function resetPasswordHandler($token) {}
+    public function resetPasswordHandler($token)
+    {
+        $isValid = $this->validate([
+            'new_password' => [
+                'rules' => 'required|min_length[5]|max_length[20]|is_password_strong[]',
+                'errors' => [
+                    'required' => 'Enter new password',
+                    'min_length' => 'New password must be at least 5 characters',
+                    'max_length' => 'New password must not be more than 20 characters',
+                    'is_password_strong' => 'New password must contains atleast 1 uppercase, 1 lowercase, 1 number and 1 special character.'
+                ]
+            ],
+            'confirm_new_password' => [
+                'rules' => 'required|matches[new_password]',
+                'matches' => 'Password does not match.'
+            ]
+        ]);
+
+        if ($isValid) {
+            return view('backend/pages/auth/reset', [
+                'pageTitle' => 'Reset Password',
+                'validation' => null,
+                'token' => $token,
+            ]);
+        } else {
+            echo 'Form validated';
+        }
+    }
 }
