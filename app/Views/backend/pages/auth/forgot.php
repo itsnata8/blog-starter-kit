@@ -8,6 +8,7 @@
     <h6 class="mb-20">
         Enter your email address to reset your password
     </h6>
+    <?php $validation = \Config\Services::validation(); ?>
     <form action="<?= route_to('send_password_reset_link') ?>" method="POST">
         <?= csrf_field(); ?>
         <?php if (!empty(session()->getFlashdata('success'))) : ?>
