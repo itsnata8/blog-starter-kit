@@ -33,7 +33,7 @@ class CIFilter implements FilterInterface
         }
         if ($arguments[0] == 'auth') {
             if (!CIAuth::check()) {
-                return redirect()->route('admin.login.form')->with('fail', 'You must be legged in first!');
+                return redirect()->route('admin.login.form')->with('fail', 'You must be logged in first!');
             }
         }
     }

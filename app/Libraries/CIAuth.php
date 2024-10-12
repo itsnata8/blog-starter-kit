@@ -10,7 +10,7 @@ class CIAuth
         $array = ['logged_in' => true];
         $userdata = $result;
         $session->set('userdata', $userdata);
-        $session->set('', $array);
+        $session->set($array);
     }
     public static function id()
     {
