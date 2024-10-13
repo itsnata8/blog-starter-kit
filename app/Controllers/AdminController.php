@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class AdminController extends BaseController
 {
+    protected $helpers = ['url', 'form', 'CIMail', 'CIFunctions'];
     public function index()
     {
         $data = [
@@ -20,5 +21,12 @@ class AdminController extends BaseController
     {
         CIAuth::forget();
         return redirect()->route('admin.login.form')->with('fail', 'You are logged out!');
+    }
+    public function profile()
+    {
+        $data = array(
+            'pageTitle' => 'Profile',
+        );
+        return view('backend/pages/profile', $data);
     }
 }

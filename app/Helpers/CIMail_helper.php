@@ -4,7 +4,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 
-// Send Email Finction Using PHPMailer Library
+// Send Email Function Using PHPMailer Library
 if (!function_exists('sendEmail')) {
     function sendEmail($mailConfig)
     {

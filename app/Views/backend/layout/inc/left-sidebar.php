@@ -41,7 +41,7 @@
                 </li>
                 <li>
                     <a
-                        href="#"
+                        href="<?= route_to('admin.profile') ?>"
                         class="dropdown-toggle no-arrow">
                         <span class="micon dw dw-user"></span>
                         <span class="mtext">Profile

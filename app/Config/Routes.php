@@ -12,6 +12,7 @@ $routes->group('admin', static function ($routes) {
         // $routes->view('example-page', 'example-page');
         $routes->get('home', 'AdminController::index', ['as' => 'admin.home']);
         $routes->get('logout', 'AdminController::logoutHandler', ['as' => 'admin.logout']);
+        $routes->get('profile', 'AdminController::profile', ['as' => 'admin.profile']);
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {
         // $routes->view('example-auth', 'example-auth');
