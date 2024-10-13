@@ -50,7 +50,29 @@
                         <!-- Timeline Tab start -->
                         <div class="tab-pane fade show active" id="personal_details" role="tabpanel">
                             <div class="pd-20">
-                                ----- Personal details -----
+                                <form action="<?= route_to('admin.update-personal-details'); ?>" method="POST" id="personal-details-form">
+                                    <?= csrf_field(); ?>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="">Name</label>
+                                            <input type="text" name="name" class="form-control" placeholder="Enter full name" value="<?= get_user()->name; ?>">
+                                            <span class="text-danger error-text name_error"> </span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="">Username</label>
+                                            <input type="text" name="username" class="form-control" placeholder="Enter full username" value="<?= get_user()->username; ?>">
+                                            <span class="text-danger error-text username_error"> </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Bio</label>
+                                        <textarea name="bio" cols="30" rows="10" class="form-control" placeholder="Bio...."><?= get_user()->bio; ?></textarea>
+                                        <span class="text-danger error-text bio_error"> </span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         <!-- Timeline Tab End -->
@@ -68,4 +90,44 @@
     </div>
 </div>
 
+<?= $this->endSection(); ?>
+<?= $this->section('scripts'); ?>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script>
+    $('#personal-details-form').on('submit', function(e) {
+        e.preventDefault();
+        var form = this;
+        var formdata = new FormData(form);
+
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formdata,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            beforeSend: function() {
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                if ($.isEmptyObject(response.errors)) {
+                    if (response.status == 1) {
+                        $('.ci-user-name').each(function() {
+                            $(this).text(response.user_info.name);
+                        });
+                        toastr.success(response.msg);
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                } else {
+                    $.each(response.errors, function(prefix, val) {
+                        $(form).find('span.' + prefix + '_error').text(val);
+                    });
+                }
+
+            }
+        })
+    })
+</script>
 <?= $this->endSection(); ?>
