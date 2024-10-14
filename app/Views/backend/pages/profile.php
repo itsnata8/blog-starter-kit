@@ -80,7 +80,35 @@
                         <!-- Tasks Tab start -->
                         <div class="tab-pane fade" id="change_password" role="tabpanel">
                             <div class="pd-20 profile-task-wrap">
-                                ----- Change password -----
+                                <form action="<?= route_to('admin.change-password') ?>" method="POST" id="change-password-form">
+                                    <input type="hidden" name="<?= csrf_token() ?>" value="<?= csrf_hash() ?>" class="ci_csrf_data">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Current password</label>
+                                                <input type="password" name="current_password" class="form-control" placeholder="Enter current password">
+                                                <span class="text-danger error-text current_password_error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">New password</label>
+                                                <input type="password" name="new_password" class="form-control" placeholder="Enter new password">
+                                                <span class="text-danger error-text new_password_error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Confirm new password</label>
+                                                <input type="password" name="confirm_new_password" class="form-control" placeholder="Retype new password">
+                                                <span class="text-danger error-text confirm_new_password_error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary">Change password</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         <!-- Tasks Tab End -->
@@ -156,6 +184,7 @@
             }
         })
     })
+    // show toastr after page relaod
     $(document).ready(function() {
         // Check if there's a toastr message in localStorage
         const toastrMessage = localStorage.getItem('toastrMessage');
@@ -173,6 +202,46 @@
             localStorage.removeItem('toastrMessage');
             localStorage.removeItem('toastrType');
         }
+    });
+    // change password
+    $('#change-password-form').on('submit', function(e) {
+        e.preventDefault();
+        // CSRF Hash
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var formdata = new FormData(form);
+
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formdata,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                // update csrf hash
+                $('.ci_csrf_data').val(response.token);
+
+                if ($.isEmptyObject(response.errors)) {
+                    if (response.status == 1) {
+                        $(form)[0].reset();
+                        toastr.success(response.msg);
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                } else {
+                    $.each(response.errors, function(prefix, val) {
+                        $(form).find('span.' + prefix + '_error').text(val);
+                    });
+                }
+            }
+        })
     });
 </script>
 <?= $this->endSection(); ?>
