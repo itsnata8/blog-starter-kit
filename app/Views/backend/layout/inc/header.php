@@ -151,7 +151,7 @@
                     role="button"
                     data-toggle="dropdown">
                     <span class="user-icon">
-                        <img src="<?= get_user()->picture == null ? '/images/users/default-avatar.png' : '/images/users/default-avatar.png' . get_user()->picture ?>" alt="avatar" class="ci-avatar-photo" />
+                        <img src="<?= get_user()->picture == null ? '/images/users/default-avatar.png' : '/images/users/' . get_user()->picture ?>" alt="avatar" class="ci-avatar-photo avatar" />
                     </span>
                     <span class="user-name ci-user-name"><?= get_user()->name; ?></span>
                 </a>

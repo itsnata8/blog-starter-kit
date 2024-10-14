@@ -39,6 +39,14 @@
         href="/backend/vendors/styles/icon-font.min.css" />
     <link rel="stylesheet" type="text/css" href="/backend/vendors/styles/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .avatar {
+            vertical-align: middle;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    </style>
     <?= $this->renderSection('stylesheets'); ?>
 </head>
 

@@ -27,8 +27,7 @@
             <div class="profile-photo">
                 <a href="javascript:;" onclick="event.preventDefault(); document.getElementById('user_profile_file').click();" class="edit-avatar"><i class="fa fa-pencil"></i></a>
                 <input type="file" name="user_profile_file" id="user_profile_file" class="d-none" style="opacity: 0;">
-                </form>
-                <img src="<?= get_user()->picture == null ? '/images/users/default-avatar.png' : '/images/users/default-avatar.png' . get_user()->picture ?>" alt="avatar" class="avatar-photo">
+                <img src="<?= get_user()->picture == null ? '/images/users/default-avatar.png' : '/images/users/' . get_user()->picture ?>" alt="avatar" class="ci-avatar-photo avatar">
             </div>
             <h5 class="text-center h5 mb-0"><?= get_user()->name; ?></h5>
             <p class="text-center text-muted font-14">
@@ -133,7 +132,47 @@
     });
 
     $('#user_profile_file').on('change', function() {
-        // learn ajax first
+        var file = this.files[0];
+        var formData = new FormData();
+        formData.append('user_profile_file', file);
+        $.ajax({
+            url: '<?= route_to('admin.update-picture-profile') ?>',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            success: function(response) {
+                if (response.status == 1) {
+                    // Store the toastr message in localStorage
+                    localStorage.setItem('toastrMessage', response.msg);
+                    localStorage.setItem('toastrType', 'success');
+
+                    // Reload the page
+                    location.reload();
+                } else {
+                    toastr.error(response.msg);
+                }
+            }
+        })
     })
+    $(document).ready(function() {
+        // Check if there's a toastr message in localStorage
+        const toastrMessage = localStorage.getItem('toastrMessage');
+        const toastrType = localStorage.getItem('toastrType');
+
+        if (toastrMessage) {
+            // Show the toastr based on the stored type
+            if (toastrType === 'success') {
+                toastr.success(toastrMessage);
+            } else if (toastrType === 'error') {
+                toastr.error(toastrMessage);
+            }
+
+            // Clear the toastr message and type from localStorage after showing it
+            localStorage.removeItem('toastrMessage');
+            localStorage.removeItem('toastrType');
+        }
+    });
 </script>
 <?= $this->endSection(); ?>

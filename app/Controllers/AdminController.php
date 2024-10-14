@@ -95,7 +95,7 @@ class AdminController extends BaseController
                     ['picture' => $new_filename]
                 )->update();
 
-            echo json_encode(['status' => 1, 'msg' => 'Profile picture updated successfully!']);
+            echo json_encode(['status' => 1, 'msg' => 'Profile picture updated successfully!', 'path' => $path . $new_filename]);
         } else {
             echo json_encode(['status' => 0, 'msg' => 'Something went wrong!']);
         }
