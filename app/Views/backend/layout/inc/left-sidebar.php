@@ -1,10 +1,10 @@
 <div class="left-side-bar">
     <div class="brand-logo">
         <a href="index.html">
-            <img src="/backend/vendors/images/deskapp-logo.svg" alt="" class="dark-logo" />
+            <img src="/images/users/default-logo-dark.png" alt="logo" class="dark-logo" />
             <img
-                src="/backend/vendors/images/deskapp-logo-white.svg"
-                alt=""
+                src="/images/users/default-logo-light.png"
+                alt="logo"
                 class="light-logo" />
         </a>
         <div class="close-sidebar" data-toggle="left-sidebar-close">
