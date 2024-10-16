@@ -49,10 +49,10 @@
                 </li>
                 <li>
                     <a
-                        href="#"
+                        href="<?= route_to('admin.settings') ?>"
                         class="dropdown-toggle no-arrow">
                         <span class="micon dw dw-settings"></span>
-                        <span class="mtext">General
+                        <span class="mtext">Settings</span>
                     </a>
                 </li>
             </ul>
