@@ -215,7 +215,6 @@ class AdminController extends BaseController
                         'blog_meta_keywords' => $request->getVar('blog_meta_keywords'),
                         'blog_meta_description' => $request->getVar('blog_meta_description'),
                     ])->update();
-
                 if ($update) {
                     return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Settings updated successfully!']);
                 } else {

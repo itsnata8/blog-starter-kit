@@ -84,7 +84,23 @@
             </div>
             <div class="tab-pane fade" id="logo_favicon" role="tabpanel">
                 <div class="pd-20">
-                    ---- Logo & Favicon ----
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Set blog logo</h5>
+                            <div class="mb-2 mt-1" style="max-width:200px;">
+                                <img src="/images/blog/<?= get_settings()->blog_logo; ?>" alt="blog image" id="logo-image-preview" class="img-thumbnail">
+                            </div>
+                            <form action="<?= route_to('admin.update-blog-logo') ?>" method="POST" enctype="multipart/form-data" id="changeBlogLogoForm">
+                                <input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>" class="ci_csrf_data">
+                                <div class="mb-2">
+                                    <input type="file" name="blog_logo" class="form-control" id="">
+                                    <span class="text-danger error-text"></span>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change logo</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="social_media" role="tabpanel">
@@ -137,6 +153,11 @@
                 }
             }
         })
+    });
+
+    $('#changeBlogLogoForm').on('submit', function(e) {
+        e.preventDefault();
+        alert('submited...');
     })
 </script>
 <?= $this->endSection(); ?>
