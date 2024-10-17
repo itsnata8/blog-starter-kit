@@ -88,7 +88,7 @@
                         <div class="col-md-6">
                             <h5>Set blog logo</h5>
                             <div class="mb-2 mt-1" style="max-width:200px;">
-                                <img src="/images/blog/<?= get_settings()->blog_logo; ?>" alt="blog image" id="logo-image-preview" class="img-thumbnail">
+                                <img src="<?= get_settings()->blog_logo ? '/images/blog/' . get_settings()->blog_logo : '/images/blog/default-logo-dark.png' ?>" alt="blog image" id="logo-image-preview" class="img-thumbnail">
                             </div>
                             <form action="<?= route_to('admin.update-blog-logo') ?>" method="POST" enctype="multipart/form-data" id="changeBlogLogoForm">
                                 <input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>" class="ci_csrf_data">
@@ -157,7 +157,52 @@
 
     $('#changeBlogLogoForm').on('submit', function(e) {
         e.preventDefault();
-        alert('submited...');
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var formdata = new FormData(form);
+        formdata.append(csrfName, csrfHash);
+        var inputFileVal = $(form).find('input[type="file"][name="blog_logo"]').val();
+
+        if (inputFileVal.length > 0) {
+            $.ajax({
+                url: $(form).attr('action'),
+                method: $(form).attr('method'),
+                data: formdata,
+                processData: false,
+                dataType: 'json',
+                contentType: false,
+                beforeSend: function() {
+                    toastr.remove();
+                    $(form).find('span.error-text').text('');
+                },
+                success: function(response) {
+                    // update csrf hash
+                    $('.ci_csrf_data').val(response.token);
+                    if (response.status == 1) {
+                        localStorage.setItem('toastrMessage', response.msg);
+                        localStorage.setItem('toastrType', 'success');
+                        location.reload();
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                }
+            })
+        } else {
+            $(form).find('span.error-text').text('Please select logo image file. PNG file type is recommended.');
+        }
+    })
+    $(document).ready(function() {
+        const toastrMessage = localStorage.getItem('toastrMessage');
+        const toastrType = localStorage.getItem('toastrType');
+        if (toastrType === 'success') {
+            toastr.success(toastrMessage);
+        } else if (toastrType === 'error') {
+            toastr.error(toastrMessage);
+        }
+
+        localStorage.removeItem('toastrMessage');
+        localStorage.removeItem('toastrType');
     })
 </script>
 <?= $this->endSection(); ?>

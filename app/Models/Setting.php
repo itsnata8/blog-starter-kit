@@ -14,7 +14,7 @@ class Setting extends Model
         'blog_phone',
         'blog_meta_keywords',
         'blog_meta_description',
-        'blog_meta_logo',
+        'blog_logo',
         'blog_favicon',
     ];
 }

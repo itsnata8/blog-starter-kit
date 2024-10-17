@@ -223,4 +223,31 @@ class AdminController extends BaseController
             }
         }
     }
+    public function updateBlogLogo()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $settings = new Setting();
+            $path = 'images/blog/';
+            $file = $request->getFile('blog_logo');
+            $setting_data = $settings->asObject()->first();
+            $old_blog_logo = $setting_data->blog_logo;
+            $new_filename = 'blog_logo_' . $file->getRandomName();
+            if ($file->move($path, $new_filename)) {
+                if ($old_blog_logo != null && file_exists($path . $old_blog_logo)) {
+                    unlink($path . $old_blog_logo);
+                }
+                $update = $settings->where('id', $setting_data->id)->set(['blog_logo' => $new_filename])->update();
+                if ($update) {
+                    return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Blog logo updated successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                }
+            } else {
+
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+            }
+        }
+    }
 }

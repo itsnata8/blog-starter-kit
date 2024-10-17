@@ -1,9 +1,9 @@
 <div class="left-side-bar">
     <div class="brand-logo">
         <a href="index.html">
-            <img src="/images/users/default-logo-dark.png" alt="logo" class="dark-logo" />
+            <img src="<?= get_settings()->blog_logo ? '/images/blog/' . get_settings()->blog_logo : '/images/blog/default-logo-dark.png' ?>" alt="logo" class="dark-logo" />
             <img
-                src="/images/users/default-logo-light.png"
+                src="<?= get_settings()->blog_logo ? '/images/blog/' . get_settings()->blog_logo : '/images/blog/default-logo-dark.png' ?>"
                 alt="logo"
                 class="light-logo" />
         </a>
