@@ -99,7 +99,20 @@
                                 <button type="submit" class="btn btn-primary">Change logo</button>
                             </form>
                         </div>
-                        <div class="col-md-6"></div>
+                        <div class="col-md-6">
+                            <h5>Set blog favicon</h5>
+                            <div class="mb-2 mt-1" style="max-width: 100px;">
+                                <img src="<?= get_settings()->blog_favicon ? '/images/blog/' . get_settings()->blog_favicon : '/images/blog/default-favicon.png' ?>" alt="favicon" class="img-thumbnail" id="favicon-image-preview">
+                            </div>
+                            <form action="<?= route_to('admin.update-blog-favicon') ?>" method="POST" enctype="multipart/form-data" id="changeBlogFaviconForm">
+                                <input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>" class="ci_csrf_data">
+                                <div class="mb-2">
+                                    <input type="file" name="blog_favicon" id="" class="form-control">
+                                    <span class="text-danger error-text"></span>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change favicon</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,6 +216,43 @@
 
         localStorage.removeItem('toastrMessage');
         localStorage.removeItem('toastrType');
+    })
+    $('#changeBlogFaviconForm').on('submit', function(e) {
+        e.preventDefault();
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var formdata = new FormData(form);
+        formdata.append(csrfName, csrfHash);
+        var inputFileVal = $(form).find('input[type="file"][name="blog_favicon"]').val();
+
+        if (inputFileVal.length > 0) {
+            $.ajax({
+                url: $(form).attr('action'),
+                method: $(form).attr('method'),
+                data: formdata,
+                processData: false,
+                dataType: 'json',
+                contentType: false,
+                beforeSend: function() {
+                    toastr.remove();
+                    $(form).find('span.error-text').text('');
+                },
+                success: function(response) {
+                    // update csrf hash
+                    $('.ci_csrf_data').val(response.token);
+                    if (response.status == 1) {
+                        localStorage.setItem('toastrMessage', response.msg);
+                        localStorage.setItem('toastrType', 'success');
+                        location.reload();
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                }
+            })
+        } else {
+            $(form).find('span.error-text').text('Please select favicon image file. PNG file type is recommended.');
+        }
     })
 </script>
 <?= $this->endSection(); ?>

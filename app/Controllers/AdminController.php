@@ -250,4 +250,32 @@ class AdminController extends BaseController
             }
         }
     }
+    public function updateBlogFavicon()
+    {
+
+        $request = \Config\Services::request();
+
+        if ($request->isAjax()) {
+            $settings = new Setting();
+            $path = 'images/blog/';
+            $file = $request->getFile('blog_favicon');
+            $setting_data = $settings->asObject()->first();
+            $old_blog_favicon = $setting_data->blog_favicon;
+            $new_filename = 'favicon_' . $file->getRandomName();
+
+            if ($file->move($path, $new_filename)) {
+                if ($old_blog_favicon != null && file_exists($path . $old_blog_favicon)) {
+                    unlink($path . $old_blog_favicon);
+                }
+                $update = $settings->where('id', $setting_data->id)->set(['blog_favicon' => $new_filename])->update();
+                if ($update) {
+                    return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Blog favicon updated successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                }
+            } else {
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+            }
+        }
+    }
 }

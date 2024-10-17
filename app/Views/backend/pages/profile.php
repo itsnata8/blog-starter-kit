@@ -184,25 +184,7 @@
             }
         })
     })
-    // show toastr after page relaod
-    $(document).ready(function() {
-        // Check if there's a toastr message in localStorage
-        const toastrMessage = localStorage.getItem('toastrMessage');
-        const toastrType = localStorage.getItem('toastrType');
 
-        if (toastrMessage) {
-            // Show the toastr based on the stored type
-            if (toastrType === 'success') {
-                toastr.success(toastrMessage);
-            } else if (toastrType === 'error') {
-                toastr.error(toastrMessage);
-            }
-
-            // Clear the toastr message and type from localStorage after showing it
-            localStorage.removeItem('toastrMessage');
-            localStorage.removeItem('toastrType');
-        }
-    });
     // change password
     $('#change-password-form').on('submit', function(e) {
         e.preventDefault();
@@ -242,6 +224,25 @@
                 }
             }
         })
+    });
+    // show toastr after page relaod
+    $(document).ready(function() {
+        // Check if there's a toastr message in localStorage
+        const toastrMessage = localStorage.getItem('toastrMessage');
+        const toastrType = localStorage.getItem('toastrType');
+
+        if (toastrMessage) {
+            // Show the toastr based on the stored type
+            if (toastrType === 'success') {
+                toastr.success(toastrMessage);
+            } else if (toastrType === 'error') {
+                toastr.error(toastrMessage);
+            }
+
+            // Clear the toastr message and type from localStorage after showing it
+            localStorage.removeItem('toastrMessage');
+            localStorage.removeItem('toastrType');
+        }
     });
 </script>
 <?= $this->endSection(); ?>

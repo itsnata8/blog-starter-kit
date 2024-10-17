@@ -8,19 +8,10 @@
 
     <!-- Site favicon -->
     <link
-        rel="apple-touch-icon"
-        sizes="180x180"
-        href="/backend/vendors/images/apple-touch-icon.png" />
-    <link
-        rel="icon"
-        type="image/png"
-        sizes="32x32"
-        href="/backend/vendors/images/favicon-32x32.png" />
-    <link
         rel="icon"
         type="image/png"
         sizes="16x16"
-        href="/backend/vendors/images/favicon-16x16.png" />
+        href="<?= get_settings()->blog_favicon ? '/images/blog/' . get_settings()->blog_favicon : '/images/blog/default-favicon.png' ?>" />
 
     <!-- Mobile Specific Metas -->
     <meta
