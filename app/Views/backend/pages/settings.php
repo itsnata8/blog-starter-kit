@@ -118,7 +118,58 @@
             </div>
             <div class="tab-pane fade" id="social_media" role="tabpanel">
                 <div class="pd-20">
-                    ---- Social Media ----
+                    <form action="" method="POST" id="social_media_form">
+                        <input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>" class="ci_csrf_data">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Facebook URL</label>
+                                    <input type="text" name="facebook_url" class="form-control" placeholder="Enter facebook page url" value="<?= get_social_media()->facebook_url; ?>">
+                                    <span class="text-danger error-text facebook_url_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Twitter URL</label>
+                                    <input type="text" name="twitter_url" class="form-control" placeholder="Enter twitter page url" value="<?= get_social_media()->twitter_url; ?>">
+                                    <span class=" text-danger error-text twitter_url_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Instagram URL</label>
+                                    <input type="text" name="instagram_url" class="form-control" placeholder="Enter instagram page url" value="<?= get_social_media()->instagram_url; ?>">
+                                    <span class=" text-danger error-text instagram_url_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Youtube URL</label>
+                                    <input type="text" name="youtube_url" class="form-control" placeholder="Enter youtube page url" value="<?= get_social_media()->youtube_url; ?>">
+                                    <span class=" text-danger error-text youtube_url_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Github URL</label>
+                                    <input type="text" name="github_url" class="form-control" placeholder="Enter github page url" value="<?= get_social_media()->github_url; ?>">
+                                    <span class=" text-danger error-text github_url_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="">Linkedin URL</label>
+                                    <input type="text" name="linkedin_url" class="form-control" placeholder="Enter linkedin page url" value="<?= get_social_media()->linkedin_url; ?>">
+                                    <span class=" text-danger error-text linkedin_url_error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
