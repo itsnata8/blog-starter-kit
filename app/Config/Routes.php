@@ -23,6 +23,7 @@ $routes->group('admin', static function ($routes) {
         $routes->post('update-social-media', 'AdminController::updateSocialMedia', ['as' => 'admin.update-social-media']);
         $routes->get('categories', 'AdminController::categories', ['as' => 'admin.categories']);
         $routes->post('add-category', 'AdminController::addCategory', ['as' => 'admin.add-category']);
+        $routes->get('get-categories', 'AdminController::getCategories', ['as' => 'admin.get-categories']);
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {
         // $routes->view('example-auth', 'example-auth');

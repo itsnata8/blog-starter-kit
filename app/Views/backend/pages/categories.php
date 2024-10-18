@@ -37,23 +37,17 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-sm table-borderless table-hover table-striped">
+                <table class="table table-sm table-borderless table-hover table-striped" id="categories-table">
                     <thead>
                         <tr>
                             <td scope="col">#</td>
                             <td scope="col">Category name</td>
                             <td scope="col">N. of sub categories</td>
                             <td scope="col">Action</td>
+                            <td scope="col">Ordering</td>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td scope="row">1</td>
-                            <td>----</td>
-                            <td>----</td>
-                            <td>----</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -100,8 +94,17 @@
 <?php include('modals/category-modal-form.php') ?>
 
 <?= $this->endSection(); ?>
+<?= $this->section('stylesheets'); ?>
+<link rel="stylesheet" href="/backend/src/plugins/datatables/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/backend/src/plugins/datatables/css/responsive.bootstrap4.min.css">
+<?= $this->endSection(); ?>
+
 
 <?= $this->section('scripts'); ?>
+<script src="/backend/src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+<script src="/backend/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+<script src="/backend/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+<script src="/backend/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 <script>
     $(document).on('click', '#add_category_btn', function(e) {
         e.preventDefault();
@@ -143,6 +146,7 @@
                         $(form)[0].reset();
                         modal.modal('hide');
                         toastr.success(response.msg);
+                        categories_DT.ajax.reload(null, false);
                     } else {
                         toastr.error(response.msg);
                     }
@@ -154,5 +158,29 @@
             }
         })
     });
+
+    // retrieve categories
+    var categories_DT = $('#categories-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "<?= route_to('admin.get-categories') ?>",
+        dom: "Brtip",
+        info: true,
+        fnCreateRow: function(nRow, aData, iDataIndex) {
+            $('td', nRow).eq(0).html(iDataIndex + 1);
+        },
+        columnDefs: [{
+                orderable: false,
+                targets: [0, 1, 2, 3]
+            },
+            {
+                visible: false,
+                targets: 4
+            }
+        ],
+        order: [
+            [4, 'asc']
+        ],
+    })
 </script>
 <?= $this->endSection(); ?>
