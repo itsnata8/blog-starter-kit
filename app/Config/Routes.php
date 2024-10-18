@@ -20,6 +20,7 @@ $routes->group('admin', static function ($routes) {
         $routes->post('update-general-settings', 'AdminController::updateGeneralSettings', ['as' => 'admin.update-general-settings']);
         $routes->post('update-blog-logo', 'AdminController::updateBlogLogo', ['as' => 'admin.update-blog-logo']);
         $routes->post('update-blog-favicon', 'AdminController::updateBlogFavicon', ['as' => 'admin.update-blog-favicon']);
+        $routes->post('update-social-media', 'AdminController::updateSocialMedia', ['as' => 'admin.update-social-media']);
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {
         // $routes->view('example-auth', 'example-auth');

@@ -118,7 +118,7 @@
             </div>
             <div class="tab-pane fade" id="social_media" role="tabpanel">
                 <div class="pd-20">
-                    <form action="" method="POST" id="social_media_form">
+                    <form action="<?= route_to('admin.update-social-media') ?>" method="POST" id="social_media_form">
                         <input type="hidden" name="<?= csrf_token(); ?>" value="<?= csrf_hash(); ?>" class="ci_csrf_data">
                         <div class="row">
                             <div class="col-md-4">
@@ -267,6 +267,43 @@
 
         localStorage.removeItem('toastrMessage');
         localStorage.removeItem('toastrType');
+    })
+    $('#social_media_form').on('submit', function(e) {
+        e.preventDefault();
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var formdata = new FormData(form);
+        formdata.append(csrfName, csrfHash);
+
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formdata,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                // update csrf hash
+                $('.ci_csrf_data').val(response.token);
+                if ($.isEmptyObject(response.errors)) {
+                    if (response.status == 1) {
+                        toastr.success(response.msg);
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                } else {
+                    $.each(response.errors, function(prefix, val) {
+                        $(form).find('span.' + prefix + '_error').text(val);
+                    })
+                }
+            }
+        })
     })
     $('#changeBlogFaviconForm').on('submit', function(e) {
         e.preventDefault();

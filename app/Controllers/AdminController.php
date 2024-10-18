@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Libraries\Hash;
 use App\Models\Setting;
 use App\Libraries\CIAuth;
+use App\Models\SocialMedia;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -275,6 +276,73 @@ class AdminController extends BaseController
                 }
             } else {
                 return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+            }
+        }
+    }
+    public function updateSocialMedia()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $validation = \Config\Services::validation();
+            $this->validate([
+                'facebook_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Invalid facebook page URL'
+                    ]
+                ],
+                'twitter_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Invalid twitter URL'
+                    ]
+                ],
+                'instagram_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Invalid instagram URL'
+                    ]
+                ],
+                'youtube_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Invalid youtube channel URL'
+                    ]
+                ],
+                'github_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Invalid github URL'
+                    ]
+                ],
+                'linkedin_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Invalid linkedin URL'
+                    ]
+                ],
+            ]);
+            if ($validation->run() === FALSE) {
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'errors' => $errors]);
+            } else {
+                $social_media = new SocialMedia();
+                $social_media_id = $social_media->asObject()->first()->id;
+                $update = $social_media->where('id', $social_media_id)->set([
+                    'facebook_url' => $request->getVar('facebook_url'),
+                    'twitter_url' => $request->getVar('twitter_url'),
+                    'instagram_url' => $request->getVar('instagram_url'),
+                    'youtube_url' => $request->getVar('youtube_url'),
+                    'github_url' => $request->getVar('github_url'),
+                    'linkedin_url' => $request->getVar('linkedin_url'),
+                ])->update();
+
+                if ($update) {
+                    return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Social media updated successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                }
             }
         }
     }
