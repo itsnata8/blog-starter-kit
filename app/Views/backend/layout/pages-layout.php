@@ -64,6 +64,7 @@
     <script src="/backend/vendors/scripts/script.min.js"></script>
     <script src="/backend/vendors/scripts/process.js"></script>
     <script src="/backend/vendors/scripts/layout-settings.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <?= $this->renderSection('scripts'); ?>
 </body>
 

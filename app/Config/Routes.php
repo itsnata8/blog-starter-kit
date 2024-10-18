@@ -21,6 +21,8 @@ $routes->group('admin', static function ($routes) {
         $routes->post('update-blog-logo', 'AdminController::updateBlogLogo', ['as' => 'admin.update-blog-logo']);
         $routes->post('update-blog-favicon', 'AdminController::updateBlogFavicon', ['as' => 'admin.update-blog-favicon']);
         $routes->post('update-social-media', 'AdminController::updateSocialMedia', ['as' => 'admin.update-social-media']);
+        $routes->get('categories', 'AdminController::categories', ['as' => 'admin.categories']);
+        $routes->post('add-category', 'AdminController::addCategory', ['as' => 'admin.add-category']);
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {
         // $routes->view('example-auth', 'example-auth');

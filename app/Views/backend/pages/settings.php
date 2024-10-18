@@ -5,12 +5,12 @@
     <div class="row">
         <div class="col-md-12 col-sm-12">
             <div class="title">
-                <h4>Tabs</h4>
+                <h4>Settings</h4>
             </div>
             <nav aria-label="breadcrumb" role="navigation">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="index.html">Home</a>
+                        <a href="<?= route_to('admin.home') ?>">Home</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         Settings
@@ -178,7 +178,6 @@
 
 <?= $this->endSection(); ?>
 <?= $this->section('scripts'); ?>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script>
     $('#general_settings_form').on('submit', function(e) {
         e.preventDefault();

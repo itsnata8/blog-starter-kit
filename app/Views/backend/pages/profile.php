@@ -10,7 +10,7 @@
             <nav aria-label="breadcrumb" role="navigation">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="index.html">Home</a>
+                        <a href="<?= route_to('admin.home') ?>">Home</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         Profile
@@ -121,7 +121,6 @@
 
 <?= $this->endSection(); ?>
 <?= $this->section('scripts'); ?>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script>
     $('#personal-details-form').on('submit', function(e) {
         e.preventDefault();

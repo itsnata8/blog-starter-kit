@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\User;
 use App\Libraries\Hash;
 use App\Models\Setting;
+use App\Models\Category;
 use App\Libraries\CIAuth;
 use App\Models\SocialMedia;
 use App\Controllers\BaseController;
@@ -340,6 +341,44 @@ class AdminController extends BaseController
 
                 if ($update) {
                     return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Social media updated successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                }
+            }
+        }
+    }
+    public function categories()
+    {
+        $data = [
+            'pageTitle' => 'Categories',
+        ];
+
+        return view('backend/pages/categories', $data);
+    }
+    public function addCategory()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'category_name' => [
+                    'rules' => 'required|is_unique[categories.name]',
+                    'errors' => [
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name already exists'
+                    ]
+                ]
+            ]);
+            if ($validation->run() === FALSE) {
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'errors' => $errors]);
+            } else {
+                $category = new Category();
+                $save = $category->save(['name' => $request->getVar('category_name')]);
+                if ($save) {
+                    return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Category added successfully!']);
                 } else {
                     return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
                 }
