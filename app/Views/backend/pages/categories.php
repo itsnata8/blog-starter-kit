@@ -98,6 +98,9 @@
 <?= $this->section('stylesheets'); ?>
 <link rel="stylesheet" href="/backend/src/plugins/datatables/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="/backend/src/plugins/datatables/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.0/jquery-ui.min.css">
+<link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.0/jquery-ui.structure.min.css">
+<link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.0/jquery-ui.theme.css">
 <?= $this->endSection(); ?>
 
 
@@ -106,6 +109,7 @@
 <script src="/backend/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
 <script src="/backend/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 <script src="/backend/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+<script src="/extra-assets/jquery-ui-1.14.0/jquery-ui.min.js"></script>
 <script>
     $(document).on('click', '#add_category_btn', function(e) {
         e.preventDefault();
@@ -167,8 +171,9 @@
         ajax: "<?= route_to('admin.get-categories') ?>",
         dom: "Brtip",
         info: true,
-        fnCreateRow: function(nRow, aData, iDataIndex) {
-            $('td', nRow).eq(0).html(iDataIndex + 1);
+        fnCreatedRow: function(row, data, index) {
+            $('td', row).eq(0).html(index + 1);
+            $('td', row).parent().attr('data-index', data[0]).attr('data-ordering', data[4]);
         },
         columnDefs: [{
                 orderable: false,
@@ -270,6 +275,32 @@
                 }, 'json');
             }
         })
+    })
+
+    $('table#categories-table').find('tbody').sortable({
+        update: function(event, ui) {
+            $(this).children().each(function(index) {
+                if ($(this).attr('data-ordering') != (index + 1)) {
+                    $(this).attr('data-ordering', (index + 1)).addClass('updated');
+                }
+            });
+            var positions = [];
+
+            $('.updated').each(function() {
+                positions.push([$(this).attr('data-index'), $(this).attr('data-ordering')]);
+                $(this).removeClass('updated');
+            })
+
+            var url = "<?= route_to('admin.reorder-categories') ?>";
+            $.get(url, {
+                positions: positions
+            }, function(response) {
+                if (response.status == 1) {
+                    categories_DT.ajax.reload(null, false);
+                    toastr.success(response.msg);
+                }
+            }, 'json');
+        }
     })
 </script>
 <?= $this->endSection(); ?>
