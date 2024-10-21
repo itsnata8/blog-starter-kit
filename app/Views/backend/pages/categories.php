@@ -242,5 +242,34 @@
             }
         })
     })
+
+    $(document).on('click', '.deleteCategoryBtn', function(e) {
+        e.preventDefault();
+        var category_id = $(this).data('id');
+        var url = "<?= route_to('admin.delete-category') ?>";
+        swal.fire({
+            title: 'Are you sure?',
+            text: "You want to delete this category",
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(function(result) {
+            if (result.value) {
+                $.get(url, {
+                    category_id: category_id
+                }, function(response) {
+                    if (response.status == 1) {
+                        categories_DT.ajax.reload(null, false);
+                        toastr.success(response.msg);
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                }, 'json');
+            }
+        })
+    })
 </script>
 <?= $this->endSection(); ?>

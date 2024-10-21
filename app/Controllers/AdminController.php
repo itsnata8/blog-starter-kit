@@ -478,4 +478,21 @@ class AdminController extends BaseController
             }
         }
     }
+    public function deleteCategory()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $id = $request->getVar('category_id');
+            $category = new Category();
+
+            $delete = $category->delete($id);
+
+            if ($delete) {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'Category deleted successfully!']);
+            } else {
+                return $this->response->setJSON(['status' => 0,  'msg' => 'Something went wrong!']);
+            }
+        }
+    }
 }
