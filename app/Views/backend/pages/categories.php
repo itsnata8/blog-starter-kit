@@ -92,6 +92,7 @@
     </div>
 </div>
 <?php include('modals/category-modal-form.php') ?>
+<?php include('modals/edit-category-modal-form.php') ?>
 
 <?= $this->endSection(); ?>
 <?= $this->section('stylesheets'); ?>
@@ -103,8 +104,8 @@
 <?= $this->section('scripts'); ?>
 <script src="/backend/src/plugins/datatables/js/jquery.dataTables.min.js"></script>
 <script src="/backend/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
-<script src="/backend/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
 <script src="/backend/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+<script src="/backend/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
 <script>
     $(document).on('click', '#add_category_btn', function(e) {
         e.preventDefault();
@@ -181,6 +182,65 @@
         order: [
             [4, 'asc']
         ],
+    });
+    $(document).on('click', '.editCategoryBtn', function(e) {
+        e.preventDefault();
+        var category_id = $(this).data('id');
+        var url = "<?= route_to('admin.get-category') ?>";
+        $.get(url, {
+            category_id: category_id
+        }, function(response) {
+            var modal = $('body').find('div#edit-category-modal');
+            var modal_title = 'Edit category';
+            var modal_btn_text = 'Save changes';
+            modal.find('form').find('input[type="hidden"][name="category_id"]').val(category_id);
+            modal.find('.modal-title').html(modal_title);
+            modal.find('.modal-footer > button.action').html(modal_btn_text);
+            modal.find('input[type="text"]').val(response.data.name);
+            modal.find('span.error-text').html('');
+            modal.modal('show');
+        }, 'json')
+    })
+
+    $('#update_category_form').on('submit', function(e) {
+        e.preventDefault();
+        // CSRF
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var modal = $('body').find('div#edit-category-modal');
+        var formdata = new FormData(form);
+        formdata.append(csrfName, csrfHash);
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formdata,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                // update csrf hash
+                $('.ci_csrf_data').val(response.token);
+                if ($.isEmptyObject(response.errors)) {
+                    if (response.status == 1) {
+                        modal.modal('hide');
+                        toastr.success(response.msg);
+                        categories_DT.ajax.reload(null, false);
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                } else {
+                    $.each(response.errors, function(prefix, val) {
+                        $('span.' + prefix + '_error').text(val);
+                    });
+                }
+            }
+        })
     })
 </script>
 <?= $this->endSection(); ?>
