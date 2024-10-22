@@ -28,6 +28,8 @@ $routes->group('admin', static function ($routes) {
         $routes->post('update-category', 'AdminController::updateCategory', ['as' => 'admin.update-category']);
         $routes->get('delete-category', 'AdminController::deleteCategory', ['as' => 'admin.delete-category']);
         $routes->get('reorder-categories', 'AdminController::reorderCategories', ['as' => 'admin.reorder-categories']);
+        $routes->get('get-parent-categories', 'AdminController::getParentCategories', ['as' => 'admin.get-parent-categories']);
+        $routes->post('add-subcategory', 'AdminController::addSubcategory', ['as' => 'admin.add-subcategory']);
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {
         // $routes->view('example-auth', 'example-auth');
