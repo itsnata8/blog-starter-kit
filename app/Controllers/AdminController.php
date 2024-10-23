@@ -689,4 +689,20 @@ class AdminController extends BaseController
             }
         }
     }
+    public function reorderSubCategories()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $positions = $request->getVar('positions');
+            $subcategory = new SubCategory();
+            foreach ($positions as $position) {
+                $index = $position[0];
+                $newPosition = $position[1];
+                $subcategory->where('id', $index)->set(['ordering' => $newPosition])->update();
+            }
+            return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategories reordered successfully!']);
+            // return $this->response->setJSON(['data' => $request->getVar('positions')]);
+        }
+    }
 }
