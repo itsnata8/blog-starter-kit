@@ -67,7 +67,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-sm table-borderless table-hover table-striped">
+                <table class="table table-sm table-borderless table-hover table-striped" id="subcategories-table">
                     <thead>
                         <tr>
                             <td scope="col">#</td>
@@ -78,13 +78,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td scope="row">1</td>
-                            <td>----</td>
-                            <td>----</td>
-                            <td>----</td>
-                            <td>----</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -153,6 +147,7 @@
                         modal.modal('hide');
                         toastr.success(response.msg);
                         categories_DT.ajax.reload(null, false);
+                        subcategoriesDT.ajax.reload(null, false); // update sub datatable
                     } else {
                         toastr.error(response.msg);
                     }
@@ -236,7 +231,8 @@
                     if (response.status == 1) {
                         modal.modal('hide');
                         toastr.success(response.msg);
-                        categories_DT.ajax.reload(null, false);
+                        categories_DT.ajax.reload(null, false); // update datatable
+                        subcategoriesDT.ajax.reload(null, false); // update sub datatable
                     } else {
                         toastr.error(response.msg);
                     }
@@ -269,6 +265,7 @@
                 }, function(response) {
                     if (response.status == 1) {
                         categories_DT.ajax.reload(null, false);
+                        subcategoriesDT.ajax.reload(null, false); // update sub datatable
                         toastr.success(response.msg);
                     } else {
                         toastr.error(response.msg);
@@ -352,6 +349,7 @@
                         $(form)[0].reset();
                         modal.modal('hide');
                         toastr.success(response.msg);
+                        subcategoriesDT.ajax.reload(null, false); // update sub datatable
                     }
                 } else {
                     $.each(response.errors, function(prefix, val) {
@@ -360,6 +358,31 @@
                 }
             }
         })
+    });
+
+    // Retrieve sub categories
+    var subcategoriesDT = $('#subcategories-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "<?= route_to('admin.get-subcategories') ?>",
+        dom: 'Brtip',
+        info: true,
+        fnCreatedRow: function(row, data, index) {
+            $('td', row).eq(0).html(index + 1);
+            $('td', row).parent().attr('data-index', data[0]).attr('data-ordering', data[5]);
+        },
+        columnDefs: [{
+                orderable: false,
+                targets: [0, 1, 2, 3, 4]
+            },
+            {
+                visible: false,
+                targets: 5
+            }
+        ],
+        order: [
+            [5, 'asc']
+        ]
     })
 </script>
 <?= $this->endSection(); ?>
