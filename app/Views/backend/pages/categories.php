@@ -326,39 +326,40 @@
     })
 
     $('#add_subcategory_form').on('submit', function(e) {
-                e.preventDefault();
-                // CSRF
-                var csrfName = $('.ci_csrf_data').attr('name');
-                var csrfHash = $('.ci_csrf_data').val();
-                var form = this;
-                var modal = $('body').find('div#subcategory-modal');
-                var formdata = new FormData(form);
-                formdata.append(csrfName, csrfHash);
-                $.ajax({
-                    url: $(form).attr('action'),
-                    method: $(form).attr('method'),
-                    data: formdata,
-                    processData: false,
-                    dataType: 'json',
-                    contentType: false,
-                    cache: false,
-                    beforeSend: function() {
-                        toastr.remove();
-                        $(form).find('span.error-text').text('');
-                    },
-                    success: function(response) {
-                        if ($.isEmptyObject(response.errors)) {
-                            if (response.status == 1) {
-                                $(form)[0].reset();
-                                modal.modal('hide');
-                                toastr.success(response.msg);
-                            }
-                        } else {
-                            $.each(response.errors, function(prefix, val) {
-                                $('span.' + prefix + '_error').text(val);
-                            });
-                        }
+        e.preventDefault();
+        // CSRF
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var modal = $('body').find('div#subcategory-modal');
+        var formdata = new FormData(form);
+        formdata.append(csrfName, csrfHash);
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formdata,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                if ($.isEmptyObject(response.errors)) {
+                    if (response.status == 1) {
+                        $(form)[0].reset();
+                        modal.modal('hide');
+                        toastr.success(response.msg);
                     }
-                })
+                } else {
+                    $.each(response.errors, function(prefix, val) {
+                        $('span.' + prefix + '_error').text(val);
+                    });
+                }
+            }
+        })
+    })
 </script>
 <?= $this->endSection(); ?>

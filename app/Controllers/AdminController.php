@@ -11,6 +11,9 @@ use App\Models\SocialMedia;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use SSP;
+use \Mberecall\CI_Slugify\SlugService;
+use SawaStacks\CodeIgniter\Slugify;
+use App\Models\SubCategory;
 
 class AdminController extends BaseController
 {
@@ -536,7 +539,45 @@ class AdminController extends BaseController
             }
         }
     }
-    public funciton addSubcategory(){
-        
+    public function addSubcategory()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'subcategory_name' => [
+                    'rules' => 'required|is_unique[sub_categories.name]',
+                    'errors' => [
+                        'required' => 'Subcategory name is required',
+                        'is_unique' => 'Subcategory name already exists'
+                    ]
+                ]
+            ]);
+
+            if ($validation->run() === FALSE) {
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'errors' => $errors]);
+            } else {
+                $subcategory = new SubCategory();
+                $subcategory_name = $request->getVar('subcategory_name');
+                $subcategory_description = $request->getVar('description');
+                $subcategory_parent = $request->getVar('parent_cat');
+                $subcategory_slug = Slugify::model(SubCategory::class)->make($subcategory_name);
+
+                $save = $subcategory->save([
+                    'name' => $subcategory_name,
+                    'parent_cat' => $subcategory_parent,
+                    'slug' => $subcategory_slug,
+                    'description' => $subcategory_description
+                ]);
+                if ($save) {
+                    return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Subcategory added successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@
                 </div>
                 <div class="form-group">
                     <label for=""><b>Sub Category name</b></label>
-                    <input type="text" name="category_name" class="form-control" placeholder="Enter sub category name">
+                    <input type="text" name="subcategory_name" class="form-control" placeholder="Enter sub category name">
                     <span class="text-danger error-text subcategory_name_error"></span>
                 </div>
                 <div class="form-group">
