@@ -468,8 +468,13 @@
                     subcategoriesDT.ajax.reload(null, false);
                     toastr.success(response.msg);
                 }
-            }, 'json');
+            });
         }
+    })
+    $(document).on('click', '.deleteSubCategoryBtn', function(e) {
+        e.preventDefault();
+        var subcategory_id = $(this).data('id');
+        alert(subcategory_id);
     })
 </script>
 <?= $this->endSection(); ?>

@@ -634,7 +634,7 @@ class AdminController extends BaseController
                 }
             ),
             array(
-                "db" => "id",
+                "db" => "ordering",
                 "dt" => 5
             )
         );
@@ -702,7 +702,6 @@ class AdminController extends BaseController
                 $subcategory->where('id', $index)->set(['ordering' => $newPosition])->update();
             }
             return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategories reordered successfully!']);
-            // return $this->response->setJSON(['data' => $request->getVar('positions')]);
         }
     }
 }
