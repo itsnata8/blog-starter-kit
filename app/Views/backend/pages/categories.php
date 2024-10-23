@@ -349,6 +349,7 @@
                         modal.modal('hide');
                         toastr.success(response.msg);
                         subcategoriesDT.ajax.reload(null, false); // update sub datatable
+                        categories_DT.ajax.reload(null, false);
                     }
                 } else {
                     $.each(response.errors, function(prefix, val) {
@@ -439,6 +440,7 @@
                     modal.modal('hide');
                     toastr.success(response.msg);
                     subcategoriesDT.ajax.reload(null, false);
+                    categories_DT.ajax.reload(null, false);
                 } else {
                     $.each(response.errors, function(prefix, val) {
                         $('span.' + prefix + '_error').text(val);
@@ -474,7 +476,31 @@
     $(document).on('click', '.deleteSubCategoryBtn', function(e) {
         e.preventDefault();
         var subcategory_id = $(this).data('id');
-        alert(subcategory_id);
+        var url = "<?= route_to('admin.delete-subcategory') ?>";
+        swal.fire({
+            title: 'Are you sure?',
+            text: "You want to delete this subcategory",
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(function(result) {
+            if (result.value) {
+                $.getJSON(url, {
+                    subcategory_id: subcategory_id
+                }, function(response) {
+                    if (response.status == 1) {
+                        subcategoriesDT.ajax.reload(null, false);
+                        categories_DT.ajax.reload(null, false);
+                        toastr.success(response.msg);
+                    } else {
+                        toatr.error(response.msg);
+                    }
+                })
+            }
+        })
     })
 </script>
 <?= $this->endSection(); ?>

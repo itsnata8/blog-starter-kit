@@ -415,7 +415,9 @@ class AdminController extends BaseController
                 "db" => 'id',
                 "dt" => 2,
                 "formatter" => function ($d, $row) {
-                    return "(x) will be added later";
+                    $subcategory = new SubCategory();
+                    $subcategories = $subcategory->where(['parent_cat' => $row['id']])->findAll();
+                    return count($subcategories);
                 }
             ),
             array(
@@ -702,6 +704,23 @@ class AdminController extends BaseController
                 $subcategory->where('id', $index)->set(['ordering' => $newPosition])->update();
             }
             return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategories reordered successfully!']);
+        }
+    }
+    public function deleteSubCategory()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $id = $request->getVar('subcategory_id');
+            $subcategory = new SubCategory();
+
+            $delete = $subcategory->where('id', $id)->delete();
+
+            if ($delete) {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategory deleted successfully!']);
+            } else {
+                return $this->response->setJSON(['status' => 0, 'msg' => 'Something went wrong!']);
+            }
         }
     }
 }
