@@ -641,4 +641,52 @@ class AdminController extends BaseController
 
         return json_encode(SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns));
     }
+    public function getSubcategory()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $id = $request->getVar('subcategory_id');
+            $subcategory = new SubCategory();
+            $subcategory_data = $subcategory->find($id);
+            return $this->response->setJSON(['data' => $subcategory_data]);
+        }
+    }
+    public function updateSubCategory()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $id = $request->getVar('subcategory_id');
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'subcategory_name' => [
+                    'rules' => 'required|is_unique[sub_categories.name,id,' . $id . ']',
+                    'errors' => [
+                        'required' => 'Subcategory name is required',
+                        'is_unique' => 'Subcategory name already exists'
+                    ]
+                ]
+            ]);
+            if ($validation->run() === FALSE) {
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'errors' => $errors]);
+            } else {
+                $subcategory = new SubCategory();
+                $data = array(
+                    'name' => $request->getVar('subcategory_name'),
+                    'parent_cat' => $request->getVar('parent_cat'),
+                    'description' => $request->getVar('description')
+                );
+                $save = $subcategory->update($id, $data);
+
+                if ($save) {
+                    return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Subcategory updated successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                }
+            }
+        }
+    }
 }

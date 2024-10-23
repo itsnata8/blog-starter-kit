@@ -88,6 +88,7 @@
 <?php include('modals/category-modal-form.php') ?>
 <?php include('modals/edit-category-modal-form.php') ?>
 <?php include('modals/subcategory-modal-form.php') ?>
+<?php include('modals/edit-subcategory-modal-form.php') ?>
 
 <?= $this->endSection(); ?>
 <?= $this->section('stylesheets'); ?>
@@ -159,7 +160,6 @@
             }
         })
     });
-
     // retrieve categories
     var categories_DT = $('#categories-table').DataTable({
         processing: true,
@@ -202,7 +202,6 @@
             modal.modal('show');
         }, 'json')
     })
-
     $('#update_category_form').on('submit', function(e) {
         e.preventDefault();
         // CSRF
@@ -384,5 +383,69 @@
             [5, 'asc']
         ]
     })
+    $(document).on('click', '.editSubCategoryBtn', function(e) {
+        e.preventDefault();
+        var subcategory_id = $(this).data('id');
+        var get_subcategory_url = "<?= route_to('admin.get-subcategory') ?>";
+        var get_parent_categories_url = "<?= route_to('admin.get-parent-categories') ?>";
+        var modal_title = "Edit Sub Category";
+        var modal_btn_text = "Save changes";
+        var modal = $('body').find('div#edit-subcategory-modal');
+        modal.find('.modal-title').text(modal_title);
+        modal.find('.modal-footer > button.action').text(modal_btn_text);
+        modal.find('input.error-text').html('');
+        var select = modal.find('select[name="parent_cat"]');
+
+        $.getJSON(get_subcategory_url, {
+            subcategory_id: subcategory_id
+        }, function(response) {
+            modal.find('input[type="text"][name="subcategory_name"]').val(response.data.name);
+            modal.find('form').find('input[type="hidden"][name="subcategory_id"]').val(response.data.id);
+            modal.find('form').find('textarea[name="description"]').val(response.data.description);
+
+            $.getJSON(get_parent_categories_url, {
+                parent_category_id: response.data.parent_cat
+            }, function(response) {
+                select.find('option').remove();
+                select.html(response.data);
+            });
+            modal.modal('show');
+        })
+    })
+    $('#update_subcategory_form').on('submit', function(e) {
+        e.preventDefault();
+        // CSRF
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var modal = $('body').find('div#edit-subcategory-modal');
+        var formdata = new FormData(form);
+        formdata.append(csrfName, csrfHash);
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formdata,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                // update csrf hash
+                if (response.status == 1) {
+                    modal.modal('hide');
+                    toastr.success(response.msg);
+                    subcategoriesDT.ajax.reload(null, false);
+                } else {
+                    $.each(response.errors, function(prefix, val) {
+                        $('span.' + prefix + '_error').text(val);
+                    });
+                }
+            }
+        });
+    });
 </script>
 <?= $this->endSection(); ?>
