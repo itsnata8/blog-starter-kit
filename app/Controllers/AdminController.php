@@ -2,18 +2,19 @@
 
 namespace App\Controllers;
 
+use SSP;
+use App\Models\Post;
 use App\Models\User;
 use App\Libraries\Hash;
 use App\Models\Setting;
 use App\Models\Category;
 use App\Libraries\CIAuth;
 use App\Models\SocialMedia;
-use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
-use SSP;
-use \Mberecall\CI_Slugify\SlugService;
-use SawaStacks\CodeIgniter\Slugify;
 use App\Models\SubCategory;
+use App\Controllers\BaseController;
+use SawaStacks\CodeIgniter\Slugify;
+use \Mberecall\CI_Slugify\SlugService;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class AdminController extends BaseController
 {
@@ -720,6 +721,105 @@ class AdminController extends BaseController
                 return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategory deleted successfully!']);
             } else {
                 return $this->response->setJSON(['status' => 0, 'msg' => 'Something went wrong!']);
+            }
+        }
+    }
+    public function addPost()
+    {
+        $subcategory = new SubCategory();
+        $data = [
+            'pageTitle' => 'Add new post',
+            'categories' => $subcategory->asObject()->findAll()
+        ];
+        return view('backend/pages/new-post', $data);
+    }
+    public function createPost()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'title' => [
+                    'rules' => 'required|is_unique[posts.title]',
+                    'errors' => [
+                        'required' => 'Post title is required',
+                        'is_unique' => 'Post title already exists'
+                    ]
+                ],
+                'content' => [
+                    'rules' => 'required|min_length[20]',
+                    'errors' => [
+                        'required' => 'Post content is required',
+                        'min_length' => 'Post content must have atleast 20 characters in length'
+                    ]
+                ],
+                'category' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Post category is required'
+                    ]
+                ],
+                'featured_image' => [
+                    'rules' => 'uploaded[featured_image]|is_image[featured_image]|max_size[featured_image,2048]',
+                    'errors' => [
+                        'uploaded' => 'Featured image is required',
+                        'is_image' => 'Featured image must be an image',
+                        'max_size' => 'Featured image must be less than 2MB'
+                    ]
+                ]
+            ]);
+
+            if ($validation->run() === FALSE) {
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'errors' => $errors]);
+            } else {
+                $user_id = CIAuth::id();
+                $path = 'images/posts/';
+
+                $file = $request->getFile('featured_image');
+                $filename = $file->getClientName();
+
+                // make post featured images folder is not exists
+                if (!is_dir($path)) {
+                    mkdir($path, 0777, true);
+                }
+                // upload featured image
+                if ($file->move($path, $filename)) {
+                    \Config\Services::image()
+                        ->withFile($path . $filename)
+                        ->fit(150, 150, 'center')
+                        ->save($path . 'thumb_' . $filename);
+
+                    \Config\Services::image()
+                        ->withFile($path . $filename)
+                        ->resize(450, 300, true, 'width')
+                        ->save($path . 'resized_' . $filename);
+
+                    $post = new Post();
+                    $data = array(
+                        'author_id' => $user_id,
+                        'category_id' => $request->getVar('category'),
+                        'title' => $request->getVar('title'),
+                        'slug' => Slugify::model(Post::class)->make($request->getVar('title')),
+                        'featured_image' => $filename,
+                        'tags' => $request->getVar('tags'),
+                        'meta_keywords' => $request->getVar('meta_keywords'),
+                        'meta_description' => $request->getVar('meta_description'),
+                        'visibility' => $request->getVar('visibility')
+                    );
+                    $save = $post->insert($data);
+                    $last_id = $post->getInsertID();
+
+                    if ($save) {
+                        return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Post created successfully!']);
+                    } else {
+                        return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Something went wrong!']);
+                    }
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Error on uploading featured image.']);
+                }
             }
         }
     }
