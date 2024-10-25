@@ -39,6 +39,10 @@ $routes->group('admin', static function ($routes) {
         $routes->group('posts', static function ($routes) {
             $routes->get('new-post', 'AdminController::addPost', ['as' => 'admin.new-post']);
             $routes->post('create-post', 'AdminController::createPost', ['as' => 'admin.create-post']);
+            $routes->get('/', 'AdminController::allPosts', ['as' => 'admin.all-posts']);
+            $routes->get('get-posts', 'AdminController::getPosts', ['as' => 'admin.get-posts']);
+            $routes->get('edit-post/(:any)', 'AdminController::editPost/$1', ['as' => 'admin.edit-post']);
+            $routes->post('update-post', 'AdminController::updatePost', ['as' => 'admin.update-post']);
         });
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {

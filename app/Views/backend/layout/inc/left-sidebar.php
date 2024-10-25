@@ -29,7 +29,7 @@
                         <span class="micon dw dw-newspaper"></span><span class="mtext">Posts</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="#">All posts</a></li>
+                        <li><a href="<?= route_to('admin.all-posts') ?>">All posts</a></li>
                         <li><a href="<?= route_to('admin.new-post') ?>">Add new</a></li>
                     </ul>
                 </li>

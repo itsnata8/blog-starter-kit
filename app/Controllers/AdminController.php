@@ -13,8 +13,6 @@ use App\Models\SocialMedia;
 use App\Models\SubCategory;
 use App\Controllers\BaseController;
 use SawaStacks\CodeIgniter\Slugify;
-use \Mberecall\CI_Slugify\SlugService;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class AdminController extends BaseController
 {
@@ -819,6 +817,223 @@ class AdminController extends BaseController
                     }
                 } else {
                     return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Error on uploading featured image.']);
+                }
+            }
+        }
+    }
+    public function allPosts()
+    {
+        $data = [
+            'pageTitle' => 'All posts'
+        ];
+        return view('backend/pages/all-posts', $data);
+    }
+    public function getPosts()
+    {
+        // DB Details
+        $dbDetails = array(
+            'host' => $this->db->hostname,
+            'user' => $this->db->username,
+            'pass' => $this->db->password,
+            'db'  => $this->db->database
+        );
+        $table = "posts";
+        $primaryKey = "id";
+        $columns = array(
+            array('db' => 'id', 'dt' => 0),
+            array(
+                'db' => 'id',
+                'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    $post = new Post();
+                    $image = $post->asObject()->find($row['id'])->featured_image;
+                    return '<img src="/images/posts/thumb_' . $image . '" class="img-thumbnail" style="max-width:70px"/>';
+                }
+            ),
+            array(
+                'db' => 'title',
+                'dt' => 2
+            ),
+            array(
+                'db' => 'id',
+                'dt' => 3,
+                'formatter' => function ($d, $row) {
+                    $post = new Post();
+                    $category_id = $post->asObject()->find($row['id'])->category_id;
+                    $subcategory = new SubCategory();
+                    $category_name = $subcategory->asObject()->find($category_id)->name;
+                    return $category_name;
+                }
+            ),
+            array(
+                'db' => 'id',
+                'dt' => 4,
+                'formatter' => function ($d, $row) {
+                    $post = new Post();
+                    $visibility = $post->asObject()->find($row['id'])->visibility;
+                    return $visibility == 1 ? 'Public' : 'Private';
+                }
+            ),
+            array(
+                'db' => 'id',
+                'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return "<div class='btn-group'>
+                    <a href='' class='btn btn-sm btn-link p-0 mx-1'>View</a>
+                    <a href='" . route_to('admin.edit-post', $row['id']) . "' class='btn btn-sm btn-link p-0 mx-1'>Edit</a>
+                    <button class='btn btn-sm btn-link p-0 mx-1 deletePostBtn' data-id='" . $row['id'] . "'>Delete</button>
+                    </div>";
+                }
+            )
+        );
+
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+        );
+    }
+    public function editPost($id)
+    {
+        $subcategory = new SubCategory();
+        $post = new Post();
+        $data = [
+            'pageTitle' => 'Edit post',
+            'categories' => $subcategory->asObject()->findAll(),
+            'post' => $post->asObject()->find($id)
+        ];
+        return view('backend/pages/edit-post', $data);
+    }
+    public function updatePost()
+    {
+        $request = \Config\Services::request();
+
+        if ($request->isAJAX()) {
+            $validation = \Config\Services::validation();
+            $post_id = $request->getVar('post_id');
+            $user_id = CIAuth::id();
+            $post = new Post();
+
+            if (isset($_FILES['featured_image']['name']) && !empty($_FILES['featured_image']['name'])) {
+                $this->validate([
+                    'title' => [
+                        'rules' => 'required|is_unique[posts.title,id,' . $post_id . ']',
+                        'errors' => [
+                            'required' => 'Post title is required',
+                            'is_unique' => 'Post title already exists'
+                        ]
+                    ],
+
+                    'content' => [
+                        'rules' => 'required|min_length[20]',
+                        'errors' => [
+                            'required' => 'Post content is required',
+                            'min_length' => 'Post content must have atleast 20 characters in length'
+                        ]
+                    ],
+                    'featured_image' => [
+                        'rules' => 'uploaded[featured_image]|is_image[featured_image]|max_size[featured_image,2048]',
+                        'errors' => [
+                            'uploaded' => 'Featured image is required',
+                            'is_image' => 'Featured image must be an image',
+                            'max_size' => 'Featured image must be less than 2mb'
+
+                        ]
+                    ]
+
+                ]);
+            } else {
+                $this->validate([
+                    'title' => [
+                        'rules' => 'required|is_unique[posts.title,id,' . $post_id . ']',
+                        'errors' => [
+                            'required' => 'Post title is required',
+                            'is_unique' => 'Post title already exists'
+                        ]
+                    ],
+                    'content' => [
+                        'rules' => 'required|min_length[20]',
+                        'errors' => [
+                            'required' => 'Post content is required',
+                            'min_length' => 'Post content must have atleast 20 characters in length'
+                        ]
+                    ]
+                ]);
+            }
+            if ($validation->run() === FALSE) {
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'errors' => $errors]);
+            } else {
+                if (isset($_FILES['featured_image']['name']) && !empty($_FILES['featured_image']['name'])) {
+                    $path = 'images/posts/';
+                    $file = $request->getFile('featured_image');
+                    $filename = $file->getClientName();
+                    $old_post_featured_image = $post->asObject()->find($post_id)->featured_image;
+
+                    // upload featured image
+                    if ($file->move($path, $filename)) {
+                        // create thumb image
+                        \Config\Services::image()
+                            ->withFile($path . $filename)
+                            ->fit(150, 150, 'center')
+                            ->save($path . 'thumb_' . $filename);
+
+                        // create resized image
+                        \Config\Services::image()
+                            ->withFile($path . $filename)
+                            ->resize(450, 300, true, 'width')
+                            ->save($path . 'resized_' . $filename);
+
+                        // delete old image
+                        if ($old_post_featured_image != null && file_exists($path . $old_post_featured_image)) {
+                            unlink($path . $old_post_featured_image);
+                        }
+                        if (file_exists($path . 'thumb_' . $old_post_featured_image)) {
+                            unlink($path . 'thumb_' . $old_post_featured_image);
+                        }
+                        if (file_exists($path . 'resized_' . $old_post_featured_image)) {
+                            unlink($path . 'resized_' . $old_post_featured_image);
+                        }
+
+                        // update post details in DB
+                        $data = array(
+                            'author_id' => $user_id,
+                            'category_id' => $request->getVar('category'),
+                            'title' => $request->getVar('title'),
+                            'slug' => Slugify::model(Post::class)->make($request->getVar('title')),
+                            'content' => $request->getVar('content'),
+                            'featured_image' => $filename,
+                            'tags' => $request->getVar('tags'),
+                            'meta_keywords' => $request->getVar('meta_keywords'),
+                            'meta_description' => $request->getVar('meta_description'),
+                            'visibility' => $request->getVar('visibility'),
+                        );
+                        $update = $post->update($post_id, $data);
+                        if ($update) {
+                            return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Post updated successfully']);
+                        } else {
+                            return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Failed to update post']);
+                        }
+                    } else {
+                        return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Failed to upload featured image']);
+                    }
+                } else {
+                    // update post details
+                    $data = array(
+                        'author_id' => $user_id,
+                        'category_id' => $request->getVar('category'),
+                        'title' => $request->getVar('title'),
+                        'slug' => Slugify::model(Post::class)->make($request->getVar('title')),
+                        'content' => $request->getVar('content'),
+                        'tags' => $request->getVar('tags'),
+                        'meta_keywords' => $request->getVar('meta_keywords'),
+                        'meta_description' => $request->getVar('meta_description'),
+                        'visibility' => $request->getVar('visibility'),
+                    );
+                    $update = $post->update($post_id, $data);
+                    if ($update) {
+                        return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Post updated successfully']);
+                    } else {
+                        return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Failed to update post']);
+                    }
                 }
             }
         }
