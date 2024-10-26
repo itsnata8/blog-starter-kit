@@ -1,3 +1,7 @@
+<?php
+
+use App\Libraries\CIAuth;
+?>
 <?= $this->extend('backend/layout/pages-layout'); ?>
 <?= $this->section('content'); ?>
 
@@ -119,7 +123,12 @@
 <script src="/extra-assets/ckeditor/ckeditor.js"></script>
 <script>
     $(function() {
-        CKEDITOR.replace('content');
+        var elfinderPath = '/extra-assets/elFinder/elfinder.src.html?intergration=ckeditor&uid=<?= CIAuth::id() ?>';
+        CKEDITOR.replace('content', {
+            filebrowserBrowseUrl: elfinderPath,
+            filebrowserImageBrowseUrl: elfinderPath + '&type=image',
+            removeDialogTabs: 'link:upload;image:upload',
+        });
     });
 
     function readURL(input) {
