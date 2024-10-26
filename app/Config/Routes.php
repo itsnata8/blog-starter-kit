@@ -43,6 +43,7 @@ $routes->group('admin', static function ($routes) {
             $routes->get('get-posts', 'AdminController::getPosts', ['as' => 'admin.get-posts']);
             $routes->get('edit-post/(:any)', 'AdminController::editPost/$1', ['as' => 'admin.edit-post']);
             $routes->post('update-post', 'AdminController::updatePost', ['as' => 'admin.update-post']);
+            $routes->get('delete-post', 'AdminController::deletePost', ['as' => 'admin.delete-post']);
         });
     });
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {

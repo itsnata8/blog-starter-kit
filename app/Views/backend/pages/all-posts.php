@@ -85,5 +85,33 @@
             targets: [1, 3, 4, 5]
         }]
     });
+    $(document).on('click', '.deletePostBtn', function(e) {
+        e.preventDefault();
+        var post_id = $(this).data('id');
+        var url = "<?= route_to('admin.delete-post') ?>";
+        swal.fire({
+            title: 'Are you sure?',
+            text: "You want to delete this subcategory",
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(function(result) {
+            if (result.value) {
+                $.getJSON(url, {
+                    post_id: post_id
+                }, function(response) {
+                    if (response.status == 1) {
+                        posts_DT.ajax.reload(null, false);
+                        toastr.success(response.msg);
+                    } else {
+                        toastr.error(response.msg);
+                    }
+                })
+            }
+        })
+    })
 </script>
 <?= $this->endSection(); ?>

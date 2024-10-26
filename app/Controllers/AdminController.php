@@ -1038,4 +1038,33 @@ class AdminController extends BaseController
             }
         }
     }
+    public function deletePost()
+    {
+        $request = \Config\Services::request();
+        if ($request->isAJAX()) {
+            $path = 'images/posts/';
+            $post_id = $request->getVar('post_id');
+            $post = new Post();
+            $postInfo = $post->asObject()->find($post_id);
+            $post_featured_image = $postInfo->featured_image;
+
+            // delete post images
+            if ($post_featured_image != null && file_exists($path . $post_featured_image)) {
+                unlink($path . $post_featured_image);
+            }
+            if (file_exists($path . 'thumb_' . $post_featured_image)) {
+                unlink($path . 'thumb_' . $post_featured_image);
+            }
+            if (file_exists($path . 'resized_' . $post_featured_image)) {
+                unlink($path . 'resized_' . $post_featured_image);
+            }
+            // delete post
+            $delete = $post->delete($post_id);
+            if ($delete) {
+                return $this->response->setJSON(['status' => 1, 'token' => csrf_hash(), 'msg' => 'Post deleted successfully']);
+            } else {
+                return $this->response->setJSON(['status' => 0, 'token' => csrf_hash(), 'msg' => 'Failed to delete post']);
+            }
+        }
+    }
 }
