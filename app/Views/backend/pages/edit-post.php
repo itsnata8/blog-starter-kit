@@ -39,7 +39,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Content</label>
-                        <textarea name="content" class="form-control" id="" cols="30" rows="10" placeholder="Type..."><?= $post->content ?></textarea>
+                        <textarea name="content" class="form-control" id="content" cols="30" rows="10" placeholder="Type..."><?= $post->content ?></textarea>
                         <span class="text-danger error-text content_error"></span>
                     </div>
                 </div>
@@ -107,10 +107,20 @@
 <?= $this->endSection(); ?>
 <?= $this->section('stylesheets'); ?>
 <link rel="stylesheet" href="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
+<style>
+    .cke_notifications_area {
+        display: none !important;
+    }
+</style>
 <?= $this->endSection(); ?>
 <?= $this->section('scripts'); ?>
 <script src="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script src="/extra-assets/ckeditor/ckeditor.js"></script>
 <script>
+    $(function() {
+        CKEDITOR.replace('content');
+    });
+
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -128,9 +138,11 @@
         e.preventDefault();
         var csrfName = $('.ci_csrf_data').attr('name');
         var csrfHash = $('.ci_csrf_data').val();
+        var content = CKEDITOR.instances.content.getData();
         var form = this;
         var formdata = new FormData(form);
         formdata.append(csrfName, csrfHash);
+        formdata.append('content', content);
         $.ajax({
             url: $(form).attr('action'),
             method: $(form).attr('method'),

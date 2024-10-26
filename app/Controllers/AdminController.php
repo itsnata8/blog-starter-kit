@@ -803,6 +803,7 @@ class AdminController extends BaseController
                         'slug' => Slugify::model(Post::class)->make($request->getVar('title')),
                         'featured_image' => $filename,
                         'tags' => $request->getVar('tags'),
+                        'content' => $request->getVar('content'),
                         'meta_keywords' => $request->getVar('meta_keywords'),
                         'meta_description' => $request->getVar('meta_description'),
                         'visibility' => $request->getVar('visibility')
