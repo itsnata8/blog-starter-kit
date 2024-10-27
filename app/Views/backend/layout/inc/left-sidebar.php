@@ -1,7 +1,7 @@
 <div class="left-side-bar">
     <div class="brand-logo">
         <a href="index.html">
-            <img src="<?= get_settings()->blog_logo ? '/images/blog/' . get_settings()->blog_logo : '/images/blog/default-logo-dark.png' ?>" alt="logo" class="dark-logo" />
+            <img src="<?= get_settings()->blog_logo ? '/images/blog/' . get_settings()->blog_logo : '/images/blog/default-logo-dark.png' ?>" alt="<?= get_settings()->blog_title ? get_settings()->blog_title : 'My Blog' ?>" class="dark-logo" />
             <img
                 src="<?= get_settings()->blog_logo ? '/images/blog/' . get_settings()->blog_logo : '/images/blog/default-logo-dark.png' ?>"
                 alt="logo"

@@ -792,7 +792,8 @@ class AdminController extends BaseController
                 $path = 'images/posts/';
 
                 $file = $request->getFile('featured_image');
-                $filename = $file->getClientName();
+                // $filename = $file->getClientName();
+                $filename = 'pmig_' . time() . $file->getClientName();
 
                 // make post featured images folder is not exists
                 if (!is_dir($path)) {
@@ -981,7 +982,7 @@ class AdminController extends BaseController
                 if (isset($_FILES['featured_image']['name']) && !empty($_FILES['featured_image']['name'])) {
                     $path = 'images/posts/';
                     $file = $request->getFile('featured_image');
-                    $filename = $file->getClientName();
+                    $filename = 'pmig_' . time() . $file->getClientName();
                     $old_post_featured_image = $post->asObject()->find($post_id)->featured_image;
 
                     // upload featured image
