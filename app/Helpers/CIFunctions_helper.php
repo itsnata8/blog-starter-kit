@@ -65,4 +65,12 @@ if (!function_exists('get_settings')) {
             return $result;
         }
     }
+    if (!function_exists('current_route_name')) {
+        function current_route_name()
+        {
+            $router = \CodeIgniter\Config\Services::router();
+            $route_name = $router->getMatchedRouteOptions()['as'];
+            return $route_name;
+        }
+    }
 }

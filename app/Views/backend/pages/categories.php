@@ -496,7 +496,7 @@
                         categories_DT.ajax.reload(null, false);
                         toastr.success(response.msg);
                     } else {
-                        toatr.error(response.msg);
+                        toastr.error(response.msg);
                     }
                 })
             }

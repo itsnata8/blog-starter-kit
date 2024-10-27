@@ -490,12 +490,18 @@ class AdminController extends BaseController
             $id = $request->getVar('category_id');
             $category = new Category();
 
-            $delete = $category->delete($id);
-
-            if ($delete) {
-                return $this->response->setJSON(['status' => 1, 'msg' => 'Category deleted successfully!']);
+            $subcategory = new SubCategory();
+            $subcategories = $subcategory->where(['parent_cat' => $id])->findAll();
+            if ($subcategories) {
+                $msg = count($subcategories) == 1 ? 'There is (' . count($subcategories) . ') subcategory in this category. Please delete all subcategories first.' : 'There are (' . count($subcategories) . ') subcategories in this category. Please delete all subcategories first.';
+                return $this->response->setJSON(['status' => 0, 'msg' => $msg]);
             } else {
-                return $this->response->setJSON(['status' => 0,  'msg' => 'Something went wrong!']);
+                $delete = $category->where('id', $id)->delete();
+                if ($delete) {
+                    return $this->response->setJSON(['status' => 1, 'msg' => 'Category deleted successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'msg' => 'Something went wrong!']);
+                }
             }
         }
     }
@@ -621,7 +627,9 @@ class AdminController extends BaseController
                 "db" => "id",
                 "dt" => 3,
                 "formatter" => function ($d, $row) {
-                    return "(x) will be added later";
+                    $post = new Post();
+                    $posts = $post->where(['category_id' => $row['id']])->findAll();
+                    return count($posts);
                 }
             ),
             array(
@@ -713,12 +721,19 @@ class AdminController extends BaseController
             $id = $request->getVar('subcategory_id');
             $subcategory = new SubCategory();
 
-            $delete = $subcategory->where('id', $id)->delete();
-
-            if ($delete) {
-                return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategory deleted successfully!']);
+            $post = new Post();
+            $posts = $post->where(['category_id' => $id])->findAll();
+            $msg = '';
+            if ($posts) {
+                $msg = count($posts) == 1 ? 'There is (' . count($posts) . ') post in this category. So you can not delete this category.' : 'There are (' . count($posts) . ') posts in this category. So you can not delete this category.';
+                return $this->response->setJSON(['status' => 0, 'msg' => $msg]);
             } else {
-                return $this->response->setJSON(['status' => 0, 'msg' => 'Something went wrong!']);
+                $delete = $subcategory->where('id', $id)->delete();
+                if ($delete) {
+                    return $this->response->setJSON(['status' => 1, 'msg' => 'Subcategory deleted successfully!']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'msg' => 'Something went wrong!']);
+                }
             }
         }
     }
