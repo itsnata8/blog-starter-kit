@@ -14,17 +14,27 @@
             </form>
             <div class="collapse navbar-collapse text-center order-lg-2 order-4" id="navigation">
                 <ul class="navbar-nav mx-auto mt-3 mt-lg-0">
-                    <li class="nav-item"> <a class="nav-link" href="about.html">About Me</a>
+                    <li class="nav-item"> <a class="nav-link" href="">Home</a>
                     </li>
-                    <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Articles
-                        </a>
-                        <div class="dropdown-menu"> <a class="dropdown-item" href="travel.html">Travel</a>
-                            <a class="dropdown-item" href="travel.html">Lifestyle</a>
-                            <a class="dropdown-item" href="travel.html">Cruises</a>
-                        </div>
-                    </li>
+
+                    <?php foreach (get_parent_categories() as $parent_category): ?>
+                        <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <?= $parent_category->name; ?>
+                            </a>
+                            <div class="dropdown-menu">
+                                <?php foreach (get_subcategories_by_parent_category_id($parent_category->id) as $subcategory) : ?>
+                                    <a class="dropdown-item" href="#"><?= $subcategory->name; ?></a>
+                                <?php endforeach; ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+
+                    <?php foreach (get_dependent_subcategories() as $subcategory): ?>
+                        <li class="nav-item"> <a class="nav-link" href="#"><?= $subcategory->name; ?></a>
+                        </li>
+                    <?php endforeach; ?>
+
                     <li class="nav-item"> <a class="nav-link" href="contact.html">Contact</a>
                     </li>
                 </ul>

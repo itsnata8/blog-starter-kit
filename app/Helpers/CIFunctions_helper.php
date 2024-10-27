@@ -73,4 +73,33 @@ if (!function_exists('get_settings')) {
             return $route_name;
         }
     }
+
+    // FRONTEND HELPER
+    if (!function_exists('get_parent_categories')) {
+        function get_parent_categories()
+        {
+            $category = new \App\Models\Category();
+            return $category->asObject()->orderBy('ordering', 'asc')->findAll();
+        }
+    }
+    if (!function_exists('get_subcategories_by_parent_category_id')) {
+        function get_subcategories_by_parent_category_id($id)
+        {
+            $subcategory = new \App\Models\SubCategory();
+            return $subcategory->asObject()
+                ->orderBy('ordering', 'asc')
+                ->where('parent_cat', $id)
+                ->findAll();
+        }
+    }
+    if (!function_exists('get_dependent_subcategories')) {
+        function get_dependent_subcategories()
+        {
+            $subcategory = new \App\Models\SubCategory();
+            return $subcategory->asObject()
+                ->orderBy('ordering', 'asc')
+                ->where('parent_cat =', 0)
+                ->findAll();
+        }
+    }
 }
