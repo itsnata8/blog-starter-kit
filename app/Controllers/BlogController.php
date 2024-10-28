@@ -13,6 +13,6 @@ class BlogController extends BaseController
         $data = [
             'pageTitle' => get_settings()->blog_title,
         ];
-        return view('frontend/example', $data);
+        return view('frontend/pages/home', $data);
     }
 }

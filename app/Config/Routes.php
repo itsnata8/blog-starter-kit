@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'BlogController::index');
+$routes->get('post/(:any)', 'BlogController::readPost/$1', ['as' => 'read-post']);
 
 $routes->group('admin', static function ($routes) {
     $routes->group('', ['filter' => 'cifilter:auth'], static function ($routes) {
