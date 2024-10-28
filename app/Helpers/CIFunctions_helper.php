@@ -2,6 +2,7 @@
 
 use App\Libraries\CIAuth;
 use App\Models\Setting;
+use App\Models\SubCategory;
 use App\Models\User;
 use App\Models\SocialMedia;
 use App\Models\Post;
@@ -165,5 +166,27 @@ function word_limiter($content = null, $limit = 20)
         }
     } else {
         return $content;
+    }
+}
+// sidebar categories
+if (!function_exists('get_sidebar_categories')) {
+    function get_sidebar_categories()
+    {
+        $subcat = new SubCategory();
+        return $subcat->asObject()
+            ->orderBy('name', 'asc')
+            ->findAll();
+    }
+}
+
+// count posts by category id
+if (!function_exists('posts_by_category_id')) {
+    function posts_by_category_id($id)
+    {
+        $post = new Post();
+        $posts = $post->where('visibility', 1)
+            ->where('category_id', $id)
+            ->findAll();
+        return count($posts);
     }
 }
