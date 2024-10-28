@@ -153,8 +153,6 @@ if (!function_exists('get_6_home_latest_post')) {
             ->getResult();
     }
 }
-
-
 function word_limiter($content = null, $limit = 20)
 {
     if (stripos($content, " ")) {
@@ -188,5 +186,18 @@ if (!function_exists('posts_by_category_id')) {
             ->where('category_id', $id)
             ->findAll();
         return count($posts);
+    }
+}
+// sidebar latest post
+if (!function_exists('sidebar_latest_post')) {
+    function sidebar_latest_post($except = null)
+    {
+        $post = new Post();
+        return $post->where('visibility', 1)
+            ->where('id !=', $except)
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get()
+            ->getResult();
     }
 }
