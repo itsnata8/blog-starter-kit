@@ -126,3 +126,7 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
+#-------------------------
+# Images/posts
+#-------------------------
+public/images/posts
