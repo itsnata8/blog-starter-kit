@@ -24,6 +24,7 @@ class Pager extends BaseConfig
         'default_full'   => 'CodeIgniter\Pager\Views\default_full',
         'default_simple' => 'CodeIgniter\Pager\Views\default_simple',
         'default_head'   => 'CodeIgniter\Pager\Views\default_head',
+        'custom_pagination_view' => 'App\Views\frontend\pages\partials\custom_pagination',
     ];
 
     /**
@@ -33,5 +34,5 @@ class Pager extends BaseConfig
      *
      * The default number of results shown in a single page.
      */
-    public int $perPage = 20;
+    public int $perPage = 6;
 }
