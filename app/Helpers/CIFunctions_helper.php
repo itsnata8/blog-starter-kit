@@ -215,3 +215,12 @@ if (!function_exists('get_tags')) {
         return array_unique(array_map('trim', array_filter(explode(',', $tagsList), 'trim')));
     }
 }
+
+if (!function_exists('get_tags_by_post_id')) {
+    function get_tags_by_post_id($id)
+    {
+        $post = new Post();
+        $tags = $post->asObject()->find($id)->tags;
+        return $tags != '' ? explode(',', $tags) : [];
+    }
+}

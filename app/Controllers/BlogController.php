@@ -98,4 +98,18 @@ class BlogController extends BaseController
         }
         return $object->groupEnd();
     }
+    public function readPost($slug)
+    {
+        $post = new Post();
+        try {
+            $post = $post->asObject()->where('slug', $slug)->first();
+            $data = [
+                'pageTitle' => $post->title,
+                'post' => $post
+            ];
+            return view('frontend/pages/single_post', $data);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
 }
