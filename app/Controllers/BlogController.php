@@ -50,4 +50,52 @@ class BlogController extends BaseController
         $data['pager'] = $post->where('visibility', 1)->like('tags', '%' . $tag . '%')->pager;
         return view('frontend/pages/tag_posts', $data);
     }
+    public function searchPosts()
+    {
+        $request = \Config\Services::request();
+        $searchData = $request->getGet();
+        $search = isset($searchData) && isset($searchData['s']) ? $searchData['s'] : null;
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $perPage = 6;
+
+        // get data object
+        $post = new Post();
+        // get data count object
+        $post2 = new Post();
+
+        if ($search == '') {
+            $paginated_data = $post->asObject()->where('visibility', 1)->paginate($perPage);
+            $total = $post->where('visibility', 1)->countAllResults();
+            $pager = $post->pager;
+        } else {
+            $keywords = explode(" ", trim($search));
+            $post = $this->getSearchdata($post, $keywords);
+            $post2 = $this->getSearchData($post2, $keywords);
+
+            $paginated_data = $post->asObject()->where('visibility', 1)->paginate($perPage);
+            $total = $post2->where('visibility', 1)->countAllResults();
+            $pager = $post->pager;
+
+            $data = [
+                'pageTitle' => 'Search for: ' . $search,
+                'posts' => $paginated_data,
+                'pager' => $pager,
+                'page' => $page,
+                'perPage' => $perPage,
+                'search' => $search,
+                'total' => $total
+            ];
+            return view('frontend/pages/search_posts', $data);
+        }
+    }
+    public function getSearchData($object, $keywords)
+    {
+        $object->select('*');
+        $object->groupStart();
+        foreach ($keywords as $keyword) {
+            $object->orLike('title', $keyword)
+                ->orLike('tags', $keyword);
+        }
+        return $object->groupEnd();
+    }
 }

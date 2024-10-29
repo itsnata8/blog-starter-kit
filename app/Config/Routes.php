@@ -9,6 +9,7 @@ $routes->get('/', 'BlogController::index');
 $routes->get('post/(:any)', 'BlogController::readPost/$1', ['as' => 'read-post']);
 $routes->get('category/(:any)', 'BlogController::categoryPost/$1', ['as' => 'category-posts']);
 $routes->get('tag/(:any)', 'BlogController::tagPosts/$1', ['as' => 'tag-posts']);
+$routes->get('search', 'BlogController::searchPosts', ['as' => 'search-posts']);
 
 $routes->group('admin', static function ($routes) {
     $routes->group('', ['filter' => 'cifilter:auth'], static function ($routes) {
