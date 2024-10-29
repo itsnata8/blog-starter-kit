@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-12">
-        <h1 class="mb-4 border-bottom border-primary d-inline-block"><?= $category->name; ?></h1>
+        <h1 class="mb-4 border-bottom border-primary d-inline-block">Tag: <?= $tag; ?></h1>
     </div>
     <div class="col-lg-8 mb-5 mb-lg-0">
         <div class="row">
