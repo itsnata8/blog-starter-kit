@@ -45,6 +45,9 @@
                 <div class="col-lg-12 col-md-6">
                     <?php include('partials/sidebar-categories.php') ?>
                 </div>
+                <div class="col-lg-12 col-md-6">
+                    <?php include('partials/sidebar-tags.php') ?>
+                </div>
             </div>
         </div>
     </div>

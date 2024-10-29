@@ -23,12 +23,6 @@ class BlogController extends BaseController
         $subcategory = $subcat->asObject()->where('slug', $category_slug)->first();
         $post = new Post();
 
-        // $data = [
-        //     'pageTitle' => 'Category:' . $subcategory->name,
-        //     'category' => $subcategory,
-        //     'posts' => $post->asObject()->where('visibility', 1)->where('category_id', $subcategory->id)->paginate(6),
-        //     'pager' => $post->pager,
-        // ];
         $data = [];
         $data['pageTitle'] = 'Category:' . $subcategory->name;
         $data['category'] = $subcategory;

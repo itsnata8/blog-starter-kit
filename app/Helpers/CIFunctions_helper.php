@@ -201,3 +201,17 @@ if (!function_exists('sidebar_latest_post')) {
             ->getResult();
     }
 }
+// all tags from posts table
+if (!function_exists('get_tags')) {
+    function get_tags()
+    {
+        $post = new Post();
+        $tagsArray = [];
+        $posts = $post->asObject()->where('visibility', 1)->orderBy('created_at', 'desc')->findAll();
+        foreach ($posts as $post) {
+            array_push($tagsArray, $post->tags);
+        }
+        $tagsList = implode(',', $tagsArray);
+        return array_unique(array_map('trim', array_filter(explode(',', $tagsList), 'trim')));
+    }
+}
