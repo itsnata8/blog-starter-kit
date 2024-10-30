@@ -1,4 +1,22 @@
 <?= $this->extend('frontend/layout/pages-layout'); ?>
+<?= $this->section('page_meta'); ?>
+<meta name="description" content="<?= $post->meta_description ?>" />
+<meta name="keywords" content="<?= $post->meta_keywords ?>" />
+<link rel="canonical" href="<?= $post->current_url ?>" />
+<meta itemprop="name" content="<?= $post->title ?>" />
+<meta itemprop="description" content="<?= $post->meta_description ?>" />
+<meta itemprop="image" content="<?= base_url('images/posts/' . $post->featured_image) ?>" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="<?= $post->title ?>" />
+<meta property="description" content="<?= $post->meta_description ?>" />
+<meta property="og:image" content="<?= base_url('images/posts/' . $post->featured_image) ?>" />
+<meta property="og:url" content="<?= $post->current_url ?>" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:domain" content="<?= base_url() ?>" />
+<meta name="twitter:title" property="og:title" itemprop="name" content="<?= $post->title ?>" />
+<meta name="twitter:description" property="og:description" itemprop="description" content="<?= $post->meta_description ?>" />
+<meta name="twitter:image" content="<?= base_url('images/posts/' . $post->featured_image) ?>" />
+<?= $this->endSection(); ?>
 <?= $this->section('content'); ?>
 
 
