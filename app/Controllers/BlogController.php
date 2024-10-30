@@ -112,4 +112,70 @@ class BlogController extends BaseController
             throw $e;
         }
     }
+    public function contactUs()
+    {
+        $data = [
+            'pageTitle' => 'Contact Us',
+            'validation' => null
+        ];
+        return view('frontend/pages/contact_us', $data);
+    }
+    public function contactUsSend()
+    {
+        $request = \Config\Services::request();
+
+        // validate the form
+        $isValid = $this->validate([
+            'name' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Please enter your name.'
+                ]
+            ],
+            'email' => [
+                'rules' => 'required|valid_email',
+                'errors' => [
+                    'required' => 'Please enter your email.',
+                    'valid_email' => 'Please enter a valid email.'
+                ]
+            ],
+            'subject' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Please enter your subject.'
+                ]
+            ],
+            'message' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Please enter your message.',
+                ]
+            ],
+        ]);
+
+        if (!$isValid) {
+            $data = [
+                'pageTitle' => 'Contact Us',
+                'validation' => $this->validator
+            ];
+            return view('frontend/pages/contact_us', $data);
+        } else {
+            $mail_body = 'Message from: <b>' . $request->getVar('name') . '</b></br>';
+            $mail_body .= '-------------------------------------</br>';
+            $mail_body .= $request->getVar('message') . '</br>';
+            $mailConfig = array(
+                'mail_from_email' => $request->getVar('email'),
+                'mail_from_name' => $request->getVar('name'),
+                'mail_recipient_email' => get_settings()->blog_email,
+                'mail_recipient_name' => get_settings()->blog_title,
+                'mail_subject' => $request->getVar('subject'),
+                'mail_body' => $mail_body,
+            );
+            if (sendEmail($mailConfig)) {
+                return redirect()->route('contact-us')->with('success', 'Your message has been sent successfully.');
+            } else {
+                return redirect()->route('contact-us')->with('fail', 'Something went wrong. Please try again later.');
+            }
+        }
+    }
 }

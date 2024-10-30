@@ -35,7 +35,7 @@
                         </li>
                     <?php endforeach; ?>
 
-                    <li class="nav-item"> <a class="nav-link" href="contact.html">Contact</a>
+                    <li class="nav-item"> <a class="nav-link" href="<?= route_to('contact-us') ?>">Contact</a>
                     </li>
                 </ul>
             </div>
