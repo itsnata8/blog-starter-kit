@@ -224,3 +224,57 @@ if (!function_exists('get_tags_by_post_id')) {
         return $tags != '' ? explode(',', $tags) : [];
     }
 }
+if (!function_exists('get_related_posts_by_post_id')) {
+    function get_related_posts_by_post_id($id, $limit = 3)
+    {
+        $post = new Post();
+        $tags = $post->asObject()->find($id)->tags;
+        $tagArray = $tags != '' ? explode(',', $tags) : [];
+        if (empty($tagArray)) {
+            $related_posts = [];
+        } else {
+            $post->select('*');
+            $post->groupStart();
+            foreach ($tagArray as $tag) {
+                $post->orLike('tags', $tag)
+                    ->orLike('tags', $tag);
+            }
+            $post->groupEnd();
+            $posts = $post->asObject()
+                ->where('id !=', $id)
+                ->where('visibility', 1)
+                ->limit($limit)
+                ->get()
+                ->getResult();
+            $related_posts = count($posts) > 0 ? $posts : [];
+        }
+        return $related_posts;
+    }
+}
+if (!function_exists('get_previous_post')) {
+    function get_previous_post($id)
+    {
+        $post = new Post();
+        $prev_post = $post->asObject()
+            ->where('id <', $id)
+            ->where('visibility', 1)
+            ->limit(1)
+            ->orderBy('id', 'desc')
+            ->first();
+        return !empty($prev_post) ? $prev_post : [];
+    }
+}
+
+if (!function_exists('get_next_post')) {
+    function get_next_post($id)
+    {
+        $post = new Post();
+        $next_post = $post->asObject()
+            ->where('id >', $id)
+            ->where('visibility', 1)
+            ->limit(1)
+            ->orderBy('id', 'asc')
+            ->first();
+        return !empty($next_post) ? $next_post : [];
+    }
+}
