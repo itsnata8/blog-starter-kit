@@ -126,6 +126,7 @@ if (!function_exists('get_reading_time')) {
 if (!function_exists('limit_words')) {
     function limit_words($content = null, $limit = 20)
     {
+        $content = preg_replace("/<img[^>]+\>/i", "", $content);
         return word_limiter($content, $limit);
     }
 }
